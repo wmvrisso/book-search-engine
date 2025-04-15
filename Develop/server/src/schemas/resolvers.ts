@@ -17,57 +17,55 @@ const resolvers = {
   },
   Mutation: {
     createUser: async (_parent: any, args: any, context: any) => {
-      const user = await User.create(req.body);
+      const user = await User.create(args);
 
       if (!user) {
-        return res.status(400).json({ message: "Something is wrong!" });
+        return { message: "Something is wrong!" };
       }
       const token = signToken(user.username, user.password, user._id);
-      return res.json({ token, user });
+      return { token, user };
     },
     login: async (_parent: any, args: any, context: any) => {
       const user = await User.findOne({
-        $or: [{ username: req.body.username }, { email: req.body.email }],
+        $or: [{ username: args.username }, { email: args.email }],
       });
       if (!user) {
-        return res.status(400).json({ message: "Can't find this user" });
+        return { message: "Can't find this user" };
       }
 
-      const correctPw = await user.isCorrectPassword(req.body.password);
+      const correctPw = await user.isCorrectPassword(args.password);
 
       if (!correctPw) {
-        return res.status(400).json({ message: "Wrong password!" });
+        return { message: "Wrong password!" };
       }
       const token = signToken(user.username, user.password, user._id);
-      return res.json({ token, user });
+      return { token, user };
     },
 
     saveBook: async (_parent: any, args: any, context: any) => {
       try {
         const updatedUser = await User.findOneAndUpdate(
-          { _id: req.user._id },
-          { $addToSet: { savedBooks: req.body } },
+          { _id: context.user._id },
+          { $addToSet: { savedBooks: args.bookData } },
           { new: true, runValidators: true }
         );
-        return res.json(updatedUser);
+        return updatedUser;
       } catch (err) {
         console.log(err);
-        return res.status(400).json(err);
+        return err;
       }
     },
 
     deleteBook: async (_parent: any, args: any, context: any) => {
       const updatedUser = await User.findOneAndUpdate(
-        { _id: req.user._id },
-        { $pull: { savedBooks: { bookId: req.params.bookId } } },
+        { _id: context.user._id },
+        { $pull: { savedBooks: { bookId: args.bookId } } },
         { new: true }
       );
       if (!updatedUser) {
-        return res
-          .status(404)
-          .json({ message: "Couldn't find user with this id!" });
+        return { message: "Couldn't find user with this id!" };
       }
-      return res.json(updatedUser);
+      return updatedUser;
     },
   },
 };
