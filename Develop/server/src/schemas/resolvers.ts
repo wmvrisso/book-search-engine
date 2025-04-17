@@ -5,7 +5,7 @@ import { signToken } from "../services/auth.js";
 
 const resolvers = {
   Query: {
-    getSingleUser: async (_parent: any, args: any, context: any) => {
+    getSingleUser: async (_parent: any, args: any) => {
       const foundUser = await User.findOne({ _id: args.id });
 
       if (!foundUser) {
@@ -16,7 +16,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUser: async (_parent: any, args: any, context: any) => {
+    addUser: async (_parent: any, args: any) => {
       const user = await User.create(args);
 
       if (!user) {
@@ -25,7 +25,7 @@ const resolvers = {
       const token = signToken(user.username, user.password, user._id);
       return { token, user };
     },
-    login: async (_parent: any, args: any, context: any) => {
+    login: async (_parent: any, args: any) => {
       const user = await User.findOne({
         $or: [{ username: args.username }, { email: args.email }],
       });
