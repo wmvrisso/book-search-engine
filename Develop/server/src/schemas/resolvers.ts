@@ -17,7 +17,9 @@ const resolvers = {
   },
   Mutation: {
     addUser: async (_parent: any, args: any) => {
+      console.log(args);
       const user = await User.create(args);
+      console.log(user);
 
       if (!user) {
         return { message: "Something is wrong!" };

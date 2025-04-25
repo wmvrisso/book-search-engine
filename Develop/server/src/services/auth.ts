@@ -20,11 +20,16 @@ export async function authenticateToken({ req }: any): Promise<void> {
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
   try {
+    console.log("Token: ", token);
+    console.log("Secret Key: ", secretKey);
     const user = jwt.verify(token, secretKey) as JwtPayload;
+    console.log("User: ", user);
     req.user = user;
     return req;
   } catch (err) {
-    throw new Error("Invalid token");
+    console.error("Error verifying token: ", err);
+    // throw new Error("Invalid token");
+    return req;
   }
 }
 
