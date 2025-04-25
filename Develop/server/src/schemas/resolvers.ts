@@ -5,8 +5,8 @@ import { signToken } from "../services/auth.js";
 
 const resolvers = {
   Query: {
-    getSingleUser: async (_parent: any, args: any) => {
-      const foundUser = await User.findOne({ _id: args.id });
+    getSingleUser: async (_parent: any, _args: any, context: any) => {
+      const foundUser = await User.findOne({ _id: context.user._id });
 
       if (!foundUser) {
         return null;
@@ -43,6 +43,11 @@ const resolvers = {
     },
 
     saveBook: async (_parent: any, args: any, context: any) => {
+      // check if user is logged in
+      if (!context.user) {
+        throw new Error("You need to be logged in!");
+      }
+
       try {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },

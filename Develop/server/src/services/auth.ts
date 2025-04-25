@@ -9,24 +9,24 @@ interface JwtPayload {
   email: string;
 }
 
-export const authenticateToken = (
-  authHeader: string | undefined
-): JwtPayload | null => {
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-
-    const secretKey = process.env.JWT_SECRET_KEY || "";
-
-    try {
-      const user = jwt.verify(token, secretKey) as JwtPayload;
-      return user;
-    } catch (err) {
-      throw new Error("Invalid token");
-    }
-  } else {
-    return null;
+export async function authenticateToken({ req }: any): Promise<void> {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return req;
   }
-};
+
+  const token = authHeader.split(" ")[1];
+
+  const secretKey = process.env.JWT_SECRET_KEY || "";
+
+  try {
+    const user = jwt.verify(token, secretKey) as JwtPayload;
+    req.user = user;
+    return req;
+  } catch (err) {
+    throw new Error("Invalid token");
+  }
+}
 
 export const signToken = (username: string, email: string, _id: unknown) => {
   const payload = { username, email, _id };
