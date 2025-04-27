@@ -1,6 +1,5 @@
 import { Container, Card, Button, Row, Col } from "react-bootstrap";
 
-import { deleteBook } from "../utils/API";
 import Auth from "../utils/auth";
 import { removeBookId } from "../utils/localStorage";
 
@@ -14,6 +13,27 @@ const SavedBooks = () => {
   // use this to determine if `useEffect()` hook needs to run again
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
+  const [removeBook] = useMutation(REMOVE_BOOK, {
+    update(cache, { data }) {
+      try {
+        const { me } = cache.readQuery({ query: GET_ME }) as any;
+        cache.writeQuery({
+          query: GET_ME,
+          data: {
+            me: {
+              ...me,
+              savedBooks: me.savedBooks.filter(
+                (book: any) => book.bookId !== data.removeBook.bookId
+              ),
+            },
+          },
+        });
+      } catch (e) {
+        console.error("Error updating cache after removing book:", e);
+      }
+    },
+  });
+
   const handleDeleteBook = async (bookId: string) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
@@ -22,11 +42,9 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await deleteBook(bookId, token);
-
-      if (!response.ok) {
-        throw new Error("something went wrong!");
-      }
+      await removeBook({
+        variables: { bookId },
+      });
 
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
