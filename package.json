@@ -4,30 +4,29 @@
   "description": "",
   "main": "server/server.ts",
   "scripts": {
-    "start": "node server/server.ts",
+    "start": "ts-node server/server.ts",
     "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm run dev\"",
     "install": "cd server && npm i && cd ../client && npm i",
     "build": "concurrently \"cd server && npm run build\" \"cd client && npm run build\"",
-    "render-build":"npm install && npm run build"
+    "render-build": "npm install && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^4.5.4"
   },
-
   "dependencies": {
     "@apollo/server": "^4.12.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "graphql": "^16.10.0",
-    "graphql-tag": "^2.12.6"
-  },
+    "graphql-tag": "^2.12.6",
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1"
-  
+  }
 }
-
