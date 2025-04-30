@@ -5,6 +5,10 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs, resolvers } from "./schemas/index.js";
 import { authenticateToken } from "./services/auth.js";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,7 +34,7 @@ const startApolloServer = async () => {
 
   // if we're in production, serve client/build as static assets
   if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../client/build")));
+    app.use(express.static(path.join(__dirname, "../../client/dist")));
   }
 
   app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
